@@ -1,0 +1,170 @@
+import java.io.*;
+import java.util.regex.*;
+import java.util.*;
+
+public class checkPassword {
+	
+	public static int passStrength(int i, String pw){
+		//calculates the strength by finding the mertic through the other tests
+		int passLength = i;
+		passLength = 0;
+		String userPassword = pw;
+		return passLength;
+	}
+	
+	public static int regexChecker(String pw){
+		String userPassword = pw;
+		//tests the strength of the password through testing of regular expressions
+		Pattern p1 = Pattern.compile(".\\p{Lower}+");
+		Pattern p2 = Pattern.compile(".\\p{Upper}+");
+		Pattern p3 = Pattern.compile(".\\p{Digit}+");
+		Pattern p4 = Pattern.compile(".\\p{Punct}+");
+		Pattern p5 = Pattern.compile(".\\p{Space}+");
+		Matcher m1 = p1.matcher(userPassword);
+		Matcher m2 = p2.matcher(userPassword);
+		Matcher m3 = p3.matcher(userPassword);
+		Matcher m4 = p4.matcher(userPassword);
+		Matcher m5 = p5.matcher(userPassword);
+		if(m1.matches() || m2.matches() || m3.matches() ||  m4.matches() ||  m5.matches()){
+			System.out.println("Your password is weak.");
+			return 0;
+		}
+//		else if(){
+//			
+//		}
+		else{
+		System.out.println("Good password.");
+			return 5;
+		}
+	}
+	
+	//loads the text files into hashmaps and checks the userPass against them
+	public static int commonPassMap(String pw) {
+		String userPassword = pw;
+		boolean commonPassFail = false;
+		boolean lastNamePF = false;
+		boolean wordsPF = false;
+		boolean yobPF = false;
+
+		int passStrength = 0;
+		//common password test
+		try {
+			FileInputStream in = new FileInputStream("CommonPasswords.txt");
+			BufferedReader scanInput = new BufferedReader(new InputStreamReader(in));
+			HashMap<String, String> map = new HashMap<String, String>();
+			String next = scanInput.readLine();
+			//loads text file into HashMap
+			while (next != null) {
+				map.put(next, "Weak");
+				next = scanInput.readLine();
+			}
+			if (map.containsKey(userPassword)) {
+				System.out.println("Your password failed the common password test.");
+				commonPassFail = true;
+			} else {
+				System.out.println("Your password passed the common password test.");
+				passStrength = passStrength + 1;
+				
+			}
+
+			scanInput.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		while (commonPassFail == false) {
+			//common last name test
+			try {
+				FileInputStream in = new FileInputStream("LastNamesOnly.txt");
+				BufferedReader scanInput = new BufferedReader(new InputStreamReader(in));
+				HashMap<String, String> map = new HashMap<String, String>();
+				String next = scanInput.readLine();
+				while (next != null) {
+					map.put(next, "Weak");
+					next = scanInput.readLine();
+				}
+				if (map.containsKey(userPassword)) {
+					System.out.println("Your password failed the common last name test.");
+					lastNamePF = true;
+				} else {
+					System.out.println("Your password passed the common last name test.");
+					passStrength = passStrength + 1;
+				}
+				
+
+				scanInput.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			//dictionary test
+			try {
+				FileInputStream in = new FileInputStream("wordList.txt");
+				BufferedReader scanInput = new BufferedReader(new InputStreamReader(in));
+				HashMap<String, String> map = new HashMap<String, String>();
+				String next = scanInput.readLine();
+				while (next != null) {
+					map.put(next, "Weak");
+					next = scanInput.readLine();
+				}
+				if (map.containsKey(userPassword)) {
+					System.out.println("Your password failed the dictionary test.");
+					wordsPF = true;
+				} else {
+					System.out.println("Your password passed the dictionary test.");
+					passStrength = passStrength + 1;
+				}
+
+				scanInput.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//baby names
+			try {
+				FileInputStream in = new FileInputStream("yob2016.txt");
+				BufferedReader scanInput = new BufferedReader(new InputStreamReader(in));
+				HashMap<String, String> map = new HashMap<String, String>();
+				String next = scanInput.readLine();
+				while (next != null) {
+					map.put(next, "Weak");
+					next = scanInput.readLine();
+				}
+				if (map.containsKey(userPassword)) {
+					System.out.println("Your password failed the baby name test.");
+					yobPF = true;
+				} else {
+					System.out.println("Your password passed the baby name test.");
+					passStrength = passStrength + 1;
+					commonPassFail = true;
+				}
+
+				scanInput.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+
+//			System.out.println("Your password has scored a " + passStrength + " out of 5 in terms of strength.");
+//
+//			if (passStrength <= 1) {
+//				System.out.println("It is very weak. You should change it immediately");
+//				return;
+//			} else if (passStrength <= 3) {
+//				System.out.println("It is okay, but could be better.");
+//				return;
+//			} else if (passStrength >= 4) {
+//				System.out.println("It is strong.");
+//			}
+		
+			if(commonPassFail == true && lastNamePF ==false && wordsPF==false && yobPF == false){//if true then they failed so a poor score is assigned
+				return 0;
+			}
+			else{
+				return 2;
+			}
+
+			
+	}
+	
+}
